@@ -51,6 +51,11 @@ Grades:
 - Automated service and API tests
 - Docker support
 
+## Documentation
+
+- [Project questions and answers](docs/PROJECT_QUESTIONS_AND_ANSWERS.md) — code-based answers to the 15 assignment and viva questions
+- Interactive API documentation: `/docs` (Swagger UI) and `/redoc` (ReDoc) when the application is running
+
 ## Project structure
 
 ```text
