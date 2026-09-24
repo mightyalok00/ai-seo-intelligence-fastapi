@@ -10,7 +10,10 @@
   <header class="hero">
     <nav class="nav">
       <a class="brand" href="/">AI SEO Intelligence</a>
-      <a class="docs-link" href="/docs" target="_blank" rel="noreferrer">API docs ↗</a>
+      <div class="nav-actions">
+        <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false">Dark mode</button>
+        <a class="docs-link" href="/docs" target="_blank" rel="noreferrer">API docs ↗</a>
+      </div>
     </nav>
     <div class="hero__copy">
       <p class="eyebrow">Strict 16-category audit</p>
@@ -88,17 +91,29 @@ https://schema.org/Article</textarea></label>
           </div>
         </details>
 
-        <button class="button" type="submit">Run strict SEO audit <span>→</span></button>
+        <button id="submit-button" class="button" type="submit">Run strict SEO audit <span aria-hidden="true">→</span></button>
+        <p id="form-status" class="sr-only" role="status" aria-live="polite"></p>
       </form>
     </section>
 
-    <section id="results" class="results" aria-live="polite">
+    <section id="results" class="results" aria-live="polite" aria-label="SEO audit results" tabindex="-1">
       <div class="panel empty-state" id="empty-state">
         <span class="empty-state__number">100</span>
         <h2>Ready to audit</h2>
         <p>Submit the page signals to see the weighted score, exact deductions, and prioritized improvements.</p>
       </div>
       <div id="dashboard" hidden>
+        <section class="panel result-toolbar" aria-label="Report actions">
+          <div>
+            <p class="eyebrow dark">Audit report</p>
+            <strong>Export or save your results</strong>
+          </div>
+          <div class="toolbar-actions">
+            <button id="export-json" class="secondary-button" type="button">Download JSON</button>
+            <button id="print-report" class="secondary-button" type="button">Print / Save PDF</button>
+          </div>
+        </section>
+
         <section class="score-panel panel">
           <div class="score-ring" id="score-ring"><strong id="overall-score">0</strong><span>/ 100</span></div>
           <div class="score-summary">
@@ -110,8 +125,13 @@ https://schema.org/Article</textarea></label>
           </div>
         </section>
 
+        <section class="panel score-breakdown">
+          <div class="section-heading compact"><div><span class="step">02</span><h2>Score breakdown</h2></div></div>
+          <div id="score-chart" class="score-chart" role="img" aria-label="Category score chart"></div>
+        </section>
+
         <section class="panel">
-          <div class="section-heading compact"><div><span class="step">02</span><h2>Category scores</h2></div></div>
+          <div class="section-heading compact"><div><span class="step">03</span><h2>Category details</h2></div></div>
           <div id="category-grid" class="category-grid"></div>
         </section>
 
@@ -122,7 +142,7 @@ https://schema.org/Article</textarea></label>
         </div>
 
         <section class="panel priorities">
-          <div class="section-heading compact"><div><span class="step">03</span><h2>Priority recommendations</h2></div></div>
+          <div class="section-heading compact"><div><span class="step">04</span><h2>Priority recommendations</h2></div></div>
           <ol id="priority-list"></ol>
         </section>
       </div>

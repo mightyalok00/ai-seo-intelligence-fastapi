@@ -1,5 +1,7 @@
 # AI SEO Intelligence FastAPI
 
+[![CI](https://github.com/mightyalok00/ai-seo-intelligence-fastapi/actions/workflows/ci.yml/badge.svg)](https://github.com/mightyalok00/ai-seo-intelligence-fastapi/actions/workflows/ci.yml)
+
 A portfolio-ready FastAPI application that produces a strict, transparent SEO audit, predicts search intent with machine learning, and presents results in a responsive browser dashboard.
 
 > The 0–100 result is an **audit completeness score**, not a Google ranking score, ranking prediction, or guarantee.
@@ -46,10 +48,13 @@ Grades:
 - Search-intent classification: informational, commercial, transactional, or navigational
 - Content-gap comparison
 - Title and meta-description suggestions
-- Redesigned HTML/CSS/JavaScript audit dashboard
+- Responsive HTML/CSS/JavaScript dashboard with light and dark themes
+- Visual score breakdown plus JSON and print/PDF report export
+- Accessible loading, status, keyboard-focus, and reduced-motion behavior
 - Swagger and ReDoc API documentation
-- Automated service and API tests
-- Docker support
+- Automated service, API, and Playwright browser tests
+- GitHub Actions for coverage, browser testing, and container verification
+- Hardened Docker and Compose deployment support
 
 ## Documentation
 
@@ -75,8 +80,12 @@ ai-seo-intelligence-fastapi/
 ├── model/intent_model.pkl
 ├── notebooks/seo_fastapi_walkthrough.ipynb
 ├── tests/
+│   └── e2e/test_dashboard.py
+├── .github/workflows/ci.yml
+├── compose.yaml
 ├── train_model.py
 ├── Dockerfile
+├── requirements-dev.txt
 ├── requirements.txt
 └── README.md
 ```
@@ -120,6 +129,34 @@ Open:
 ```bash
 python -m pytest -q
 ```
+
+The standard command runs service and API tests and skips the live browser test unless `E2E_BASE_URL` is set. To run the full browser check locally:
+
+```bash
+pip install -r requirements-dev.txt
+python -m playwright install chromium
+uvicorn app.main:app
+```
+
+In another terminal:
+
+```bash
+E2E_BASE_URL=http://127.0.0.1:8000 python -m pytest -q tests/e2e
+```
+
+PowerShell users can set the variable with `$env:E2E_BASE_URL = "http://127.0.0.1:8000"` before running Pytest.
+
+## Run with Docker
+
+Build and start the hardened container with Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+The container runs as an unprivileged user, uses a read-only filesystem under Compose, and exposes a health check at `/api/health`. Open http://127.0.0.1:8000 after it becomes healthy.
+
+The CI workflow retrains the model with pinned dependencies, runs test coverage, exercises the dashboard in Chromium, builds the production image, and verifies the running container.
 
 ## Endpoints
 

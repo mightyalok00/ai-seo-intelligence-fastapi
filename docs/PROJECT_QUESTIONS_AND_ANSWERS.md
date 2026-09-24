@@ -184,17 +184,17 @@ On form submission, `frontend/static/app.js`:
 3. builds the same nested JSON structure expected by `SEOAnalysisRequest`;
 4. sends it to `/api/analyze` with `fetch()` and `Content-Type: application/json`;
 5. parses either the successful result or FastAPI error detail; and
-6. renders the overall score, grade, intent, keyword density, progress indicators, 16 category cards, critical issues, warnings, passed checks, and prioritized recommendations.
+6. renders the overall score, grade, intent, keyword density, visual score breakdown, 16 category cards, critical issues, warnings, passed checks, and prioritized recommendations.
 
-Dynamic text is escaped before being inserted into generated HTML lists/cards. During a request the submit button is disabled, and failures replace the dashboard with a readable error state.
+Dynamic text is escaped before being inserted into generated HTML lists/cards. During a request the submit button is disabled and exposes an accessible busy state; failures replace the dashboard with a readable error state. The interface also supports keyboard-visible focus, reduced-motion preferences, persistent light/dark themes, JSON downloads, and print styling that lets the browser save a report as PDF.
 
 ## 15. How are automated tests and Docker used to improve the reliability, reproducibility, and deployment of the AI SEO Intelligence application?
 
-Pytest covers both the service layer and HTTP API. The current tests verify exact-phrase keyword counting, the 100-point weight total, deterministic repeated results, penalties for missing evidence, grade boundaries, content-gap output, health/frontend/static/Swagger delivery, Pydantic validation, the complete audit response contract, critical issues, intent prediction, and the absence of a history endpoint. FastAPI's `TestClient` exercises routes without starting an external server.
+Pytest covers both the service layer and HTTP API. The tests verify exact-phrase keyword counting, the 100-point weight total, deterministic repeated results, penalties for missing evidence, grade boundaries, content-gap output, health/frontend/static/Swagger delivery, Pydantic validation, the complete audit response contract, critical issues, intent prediction, and the absence of a history endpoint. FastAPI's `TestClient` exercises routes without starting an external server. A Playwright test runs the live dashboard in Chromium, switches theme, submits an audit, verifies all 16 chart rows, and downloads the JSON report.
 
-The Dockerfile provides a repeatable Python 3.12 environment. It installs the pinned dependencies from `requirements.txt`, copies the repository, trains the intent model during the image build, exposes port 8000, and starts Uvicorn on `0.0.0.0:8000`. Training at build time ensures that a newly built image contains the required model artifact.
+The Dockerfile provides a repeatable Python 3.12 environment. It installs the pinned dependencies from `requirements.txt`, copies the repository, trains the intent model during the image build, exposes port 8000, and starts Uvicorn on `0.0.0.0:8000`. Training at build time ensures that a newly built image contains the required model artifact. The runtime uses an unprivileged user and includes a container health check. `compose.yaml` adds restart behavior, prevents privilege escalation, and uses a read-only filesystem with a temporary `/tmp` mount.
 
-Together, tests help detect scoring and API regressions, while Docker standardizes dependencies, model preparation, and the production start command. The existing suite is focused rather than exhaustive: for example, it does not currently run a browser end-to-end test or build the Docker image in a test.
+GitHub Actions runs service/API coverage, the Playwright browser test, and a separate production-image build and health verification for every pull request and push to `main`. Together, these checks detect scoring, API, UI, and container regressions while Docker standardizes dependencies, model preparation, and the production start command.
 
 ## Source map
 

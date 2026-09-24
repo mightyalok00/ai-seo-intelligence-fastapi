@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+      - name: Train model with pinned dependencies
+        run: python train_model.py
+      - name: Run service and API tests with coverage
+        run: python -m pytest -q tests --ignore=tests/e2e --cov=app --cov-report=term-missing
+      - name: Install Chromium
+        run: python -m playwright install --with-deps chromium
+      - name: Start application
+        run: uvicorn app.main:app --host 127.0.0.1 --port 8000 > uvicorn.log 2>&1 &
+      - name: Run browser test
+        env:
+          E2E_BASE_URL: http://127.0.0.1:8000
+        run: python -m pytest -q tests/e2e
+
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build production image
+        run: docker build --tag ai-seo-intelligence:test .
+      - name: Start container
+        run: docker run --detach --name seo-api --publish 8000:8000 ai-seo-intelligence:test
+      - name: Verify container health
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://127.0.0.1:8000/api/health; then
+              exit 0
+            fi
+            sleep 1
+          done
+          docker logs seo-api
+          exit 1

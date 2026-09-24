@@ -88,6 +88,10 @@ def test_health_frontend_and_docs(client):
     home = client.get("/")
     assert home.status_code == 200
     assert "Strict 16-category audit" in home.text
+    assert 'id="theme-toggle"' in home.text
+    assert 'id="export-json"' in home.text
+    assert 'id="print-report"' in home.text
+    assert 'id="score-chart"' in home.text
     assert client.get("/static/app.js").status_code == 200
     assert client.get("/docs").status_code == 200
 

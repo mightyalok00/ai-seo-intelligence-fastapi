@@ -1,6 +1,32 @@
 const form = document.getElementById("seo-form");
 const dashboard = document.getElementById("dashboard");
 const emptyState = document.getElementById("empty-state");
+const results = document.getElementById("results");
+const formStatus = document.getElementById("form-status");
+const themeToggle = document.getElementById("theme-toggle");
+let latestAudit = null;
+
+const getSavedTheme = () => {
+  try { return localStorage.getItem("seo-audit-theme"); } catch { return null; }
+};
+
+const applyTheme = (theme) => {
+  const dark = theme === "dark";
+  document.documentElement.dataset.theme = dark ? "dark" : "light";
+  themeToggle.textContent = dark ? "Light mode" : "Dark mode";
+  themeToggle.setAttribute("aria-pressed", String(dark));
+  themeToggle.setAttribute("aria-label", `Switch to ${dark ? "light" : "dark"} theme`);
+};
+
+const preferredTheme = getSavedTheme()
+  || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+applyTheme(preferredTheme);
+
+themeToggle.addEventListener("click", () => {
+  const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+  applyTheme(next);
+  try { localStorage.setItem("seo-audit-theme", next); } catch { /* Theme still works for this visit. */ }
+});
 
 const lines = (id, keepEmpty = false) => document.getElementById(id).value
   .split("\n")
@@ -46,6 +72,7 @@ function renderList(id, values, emptyText) {
 }
 
 function renderDashboard(data) {
+  latestAudit = data;
   emptyState.hidden = true;
   dashboard.hidden = false;
   document.getElementById("overall-score").textContent = data.overall_score;
@@ -53,6 +80,17 @@ function renderDashboard(data) {
   document.getElementById("status").textContent = `${data.search_intent} intent · ${data.keyword_density}% keyword density`;
   document.getElementById("progress-bar").style.width = `${data.overall_score}%`;
   document.getElementById("score-ring").style.setProperty("--score", `${data.overall_score * 3.6}deg`);
+
+  document.getElementById("score-chart").innerHTML = Object.entries(data.category_scores)
+    .map(([key, item]) => {
+      const percent = Math.round((item.score / item.max) * 100);
+      const label = labels[key] || key;
+      return `<div class="chart-row" aria-label="${escapeHtml(label)}: ${item.score} out of ${item.max}">
+        <span>${escapeHtml(label)}</span>
+        <div class="chart-track"><i style="width:${percent}%"></i></div>
+        <strong>${percent}%</strong>
+      </div>`;
+    }).join("");
 
   document.getElementById("category-grid").innerHTML = Object.entries(data.category_scores)
     .map(([key, item]) => {
@@ -77,7 +115,28 @@ function renderDashboard(data) {
     ? data.priority_recommendations.map((item) => `<li>${escapeHtml(item)}</li>`).join("")
     : "<li>Maintain quality and re-audit after meaningful page changes.</li>";
   document.getElementById("results").scrollIntoView({ behavior: "smooth", block: "start" });
+  results.focus({ preventScroll: true });
 }
+
+document.getElementById("export-json").addEventListener("click", () => {
+  if (!latestAudit) return;
+  const safeKeyword = latestAudit.keyword.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "seo-audit";
+  const blob = new Blob([JSON.stringify(latestAudit, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${safeKeyword}-audit.json`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  formStatus.textContent = "JSON audit report downloaded.";
+});
+
+document.getElementById("print-report").addEventListener("click", () => {
+  if (!latestAudit) return;
+  window.print();
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -116,7 +175,10 @@ form.addEventListener("submit", async (event) => {
   };
 
   button.disabled = true;
-  button.innerHTML = "Auditing…";
+  button.setAttribute("aria-busy", "true");
+  form.setAttribute("aria-busy", "true");
+  button.innerHTML = '<span class="spinner" aria-hidden="true"></span><span>Auditing page signals…</span>';
+  formStatus.textContent = "SEO audit is running.";
   try {
     const response = await fetch("/api/analyze", {
       method: "POST",
@@ -129,14 +191,19 @@ form.addEventListener("submit", async (event) => {
       throw new Error(detail || "The audit request failed.");
     }
     renderDashboard(data);
+    formStatus.textContent = `Audit complete. Score ${data.overall_score} out of 100.`;
   } catch (error) {
     emptyState.hidden = false;
     dashboard.hidden = true;
     emptyState.querySelector("h2").textContent = "Audit could not run";
     emptyState.querySelector("p").textContent = error.message;
+    formStatus.textContent = `Audit failed: ${error.message}`;
+    results.focus();
   } finally {
     button.disabled = false;
-    button.innerHTML = 'Run strict SEO audit <span>→</span>';
+    button.removeAttribute("aria-busy");
+    form.removeAttribute("aria-busy");
+    button.innerHTML = 'Run strict SEO audit <span aria-hidden="true">→</span>';
   }
 });
 
