@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI SEO Intelligence Audit</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <nav class="nav">
+      <a class="brand" href="/">AI SEO Intelligence</a>
+      <a class="docs-link" href="/docs" target="_blank" rel="noreferrer">API docs ↗</a>
+    </nav>
+    <div class="hero__copy">
+      <p class="eyebrow">Strict 16-category audit</p>
+      <h1>A harder, more honest<br />SEO score.</h1>
+      <p class="hero__lede">Measure on-page and technical completeness across 100 weighted points. A perfect score is intentionally rare.</p>
+      <p class="disclaimer">This is a transparent audit score—not a Google ranking score or ranking guarantee.</p>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel form-panel">
+      <div class="section-heading">
+        <div><span class="step">01</span><h2>Page signals</h2></div>
+        <p>Paste measured page data for the most accurate audit.</p>
+      </div>
+      <form id="seo-form">
+        <div class="form-grid">
+          <label>Target keyword<input id="keyword" required value="best seo tools" /></label>
+          <label>Page URL<input id="url" type="url" value="https://example.com/best-seo-tools" /></label>
+          <label class="wide">Title<input id="title" value="Best SEO Tools: Compare Features and Pricing" /></label>
+          <label class="wide">Meta description<textarea id="meta" rows="3">Compare the best SEO tools for keyword research, audits, content optimization, and reporting. Discover the right platform for your marketing team today.</textarea></label>
+          <label class="wide">H1<input id="h1" value="Compare the Best SEO Tools for Modern Marketing" /></label>
+          <label class="wide">H2 headings <span>(one per line)</span><textarea id="h2s" rows="4">Best SEO Tools Compared
+Keyword Research Features
+Technical SEO and Site Audits
+Pricing and Reporting</textarea></label>
+          <label class="wide">Main content<textarea id="content" rows="11" required>Best SEO tools help marketing teams research keywords, audit websites, compare competitors, and improve search performance. This guide explains how to choose a platform based on features, pricing, reporting, and daily workflow.
+
+Strong platforms combine keyword research with technical audits and content optimization. Teams should compare data quality, integrations, usability, and support before selecting a subscription.
+
+Technical SEO features can reveal crawling, indexing, speed, and broken-link problems. Content tools help writers cover relevant topics naturally and answer the questions their audience is searching for.
+
+Compare each option with a free trial when available. The best SEO tools should fit your budget, reporting needs, team size, and marketing goals.</textarea></label>
+          <label>Semantic terms <span>(one per line)</span><textarea id="semantic-terms" rows="5">keyword research
+technical audit
+backlink analysis
+rank tracking
+content optimization
+competitor analysis
+search visibility
+reporting dashboard</textarea></label>
+          <label>Image ALT text <span>(one per line; blank = missing)</span><textarea id="image-alts" rows="5">SEO tools comparison dashboard screenshot
+Keyword research chart for SEO software
+Technical audit report showing site issues</textarea></label>
+          <label>Internal links <span>(one URL per line)</span><textarea id="internal-links" rows="5">/seo-guide
+/keyword-research
+/technical-seo
+/content-optimization
+/contact</textarea></label>
+          <label>External links <span>(one URL per line)</span><textarea id="external-links" rows="5">https://developers.google.com/search/docs
+https://schema.org/Article</textarea></label>
+        </div>
+
+        <details open>
+          <summary>Indexing & structured data</summary>
+          <div class="form-grid details-grid">
+            <label class="wide">Canonical URL<input id="canonical" type="url" value="https://example.com/best-seo-tools" /></label>
+            <label>Indexability<select id="robots-indexable"><option value="true">Indexable</option><option value="false">Not indexable</option><option value="unknown">Unknown</option></select></label>
+            <label>Robots directives<input id="robots-directives" value="index, follow" /></label>
+            <label class="wide">Schema JSON-LD<textarea id="schema" rows="7">{"@context":"https://schema.org","@type":"Article","headline":"Best SEO Tools Compared","description":"A detailed comparison of SEO tools","author":{"@type":"Person","name":"SEO Team"}}</textarea></label>
+          </div>
+        </details>
+
+        <details>
+          <summary>Optional technical measurements</summary>
+          <div class="form-grid details-grid technical-grid">
+            <label>HTTP status<input id="status-code" type="number" min="100" max="599" value="200" /></label>
+            <label>PageSpeed score<input id="page-speed" type="number" min="0" max="100" value="92" /></label>
+            <label class="check"><input id="https" type="checkbox" checked /> HTTPS</label>
+            <label class="check"><input id="mobile-friendly" type="checkbox" checked /> Mobile friendly</label>
+            <label class="check"><input id="viewport" type="checkbox" checked /> Viewport configured</label>
+            <label class="check"><input id="favicon" type="checkbox" checked /> Favicon present</label>
+            <label class="check"><input id="sitemap" type="checkbox" checked /> Sitemap present</label>
+            <label>Broken links<input id="broken-links" type="number" min="0" value="0" /></label>
+          </div>
+        </details>
+
+        <button class="button" type="submit">Run strict SEO audit <span>→</span></button>
+      </form>
+    </section>
+
+    <section id="results" class="results" aria-live="polite">
+      <div class="panel empty-state" id="empty-state">
+        <span class="empty-state__number">100</span>
+        <h2>Ready to audit</h2>
+        <p>Submit the page signals to see the weighted score, exact deductions, and prioritized improvements.</p>
+      </div>
+      <div id="dashboard" hidden>
+        <section class="score-panel panel">
+          <div class="score-ring" id="score-ring"><strong id="overall-score">0</strong><span>/ 100</span></div>
+          <div class="score-summary">
+            <p class="eyebrow dark">Audit result</p>
+            <h2 id="grade">—</h2>
+            <p id="status">Analysis complete.</p>
+            <div class="progress"><span id="progress-bar"></span></div>
+            <p class="score-note">Audit completeness only. Not a Google ranking prediction.</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="section-heading compact"><div><span class="step">02</span><h2>Category scores</h2></div></div>
+          <div id="category-grid" class="category-grid"></div>
+        </section>
+
+        <div class="insight-grid">
+          <section class="panel insight critical"><h3>Critical issues <span id="critical-count">0</span></h3><ul id="critical-list"></ul></section>
+          <section class="panel insight warning"><h3>Warnings <span id="warning-count">0</span></h3><ul id="warning-list"></ul></section>
+          <section class="panel insight passed"><h3>Passed checks <span id="passed-count">0</span></h3><ul id="passed-list"></ul></section>
+        </div>
+
+        <section class="panel priorities">
+          <div class="section-heading compact"><div><span class="step">03</span><h2>Priority recommendations</h2></div></div>
+          <ol id="priority-list"></ol>
+        </section>
+      </div>
+    </section>
+  </main>
+  <script src="/static/app.js"></script>
+</body>
+</html>
+
