@@ -1,5 +1,13 @@
 # AI SEO Intelligence FastAPI
 
+## 🚀 Live Demo
+
+- **Application:** https://ai-seo-intelligence-fastapi-production.up.railway.app
+- **Swagger API Docs:** https://ai-seo-intelligence-fastapi-production.up.railway.app/docs
+- **ReDoc:** https://ai-seo-intelligence-fastapi-production.up.railway.app/redoc
+- **Health Check:** https://ai-seo-intelligence-fastapi-production.up.railway.app/api/health
+
+
 [![CI](https://github.com/mightyalok00/ai-seo-intelligence-fastapi/actions/workflows/ci.yml/badge.svg)](https://github.com/mightyalok00/ai-seo-intelligence-fastapi/actions/workflows/ci.yml)
 
 A portfolio-ready FastAPI application that produces a strict, transparent SEO audit, predicts search intent with machine learning, and presents results in a responsive browser dashboard.
